@@ -66,9 +66,9 @@ def getQuotesIntersection(data1: Column, data2: Column):
     return shared
 
 
-def _plotSpeedGraph(username: str, keystrokes):  # TODO BUGFIX dEnd and rEnd works for every word, not the full quote in reverse
-    output = ""
-    delays = np.array([], dtype="float")
+def _plotSpeedGraph(username: str, keystrokes):
+    output = []
+    delays = []
 
     for keystroke in keystrokes:
         if "action" in keystroke:
@@ -81,59 +81,53 @@ def _plotSpeedGraph(username: str, keystrokes):  # TODO BUGFIX dEnd and rEnd wor
         if "i" in action:
             index = action["i"]
             key = action["key"]
-            # print(index, end="")
-            # print(key, end="")
-            output += key
-            delays = np.append(delays, keystroke["time"])
+
+            if index == 0:
+                output.append([])
+                delays.append([])
+
+            output[-1].append((index, key))
+            delays[-1].append(keystroke["time"])
         elif "dEnd" in action and "dStart" in action:  # delete characters
-            print(output)
-            print("#", action)
-            print()
-            print()
-            start = len(output) - action["dStart"]
-            end = len(output) - action["dEnd"]
-            start, end = end, start
+            start = action["dStart"]
+            end = action["dEnd"]
 
-            output = output[:start] + output[end:]
-            delays = np.append(delays[:start], delays[end:])
+            output[-1] = output[-1][:start] + output[-1][end:]
+            delays[-1] = delays[-1][:start] + delays[-1][end:]
         elif "rEnd" in action and "rStart" in action and "key" in action:  # replace characters
-            start = len(output) - action["rStart"]
-            end = len(output) - action["rEnd"]
-            start, end = end, start
+            start = action["rStart"]
+            end = action["rEnd"]
 
-            output = output[:start] + action["key"] + output[end:]
-            delays = np.concatenate((delays[:start], np.array([keystroke["time"]]), delays[end:]))
+            output[-1] = output[-1][:start] + [(start, action["key"])] + output[-1][end:]
+            delays[-1] = delays[-1][:start] + [keystroke["time"]] + delays[-1][end:]
         else:
             print("UNKNOWN ACTION: ", action, end="")
 
+    delays = [delay for _delays in delays for delay in _delays]
     x = np.array(range(1, len(delays) + 1))
     delays /= x
     delays = 12000 / delays
 
     plt.plot(x, delays, label=username)
-    print(output, end="\n\n")
 
-    plt.title("Typing speed")
-    plt.xlabel("Characters")
-    plt.ylabel("Typing Speed (in WPM)")
-    plt.yticks()
+    output = "".join([char[1] for word in output for char in word])
 
-    return delays
+    return delays, output
 
 
 def plotSpeedGraph(*keystrokes):
     ymin = 999999999
     ymax = 0
     xmax = 0
-
-    keystrokes = [keystrokes[-1]]
+    quote = ""
 
     for username, keystroke in keystrokes:
-        delays = _plotSpeedGraph(username, keystroke)
+        delays, quote = _plotSpeedGraph(username, keystroke)
 
-        ypadding = 0.05
+        # ypadding = 0.05
+        ypadding = 0.1
         _ymin = min(delays) * (1 - ypadding)
-        _ymax = max(delays[int(len(delays) * 0.05):]) * (1 + ypadding)
+        _ymax = max(delays[int(len(delays) * ypadding):]) * (1 + ypadding)
 
         if _ymin < ymin:
             ymin = _ymin
@@ -144,6 +138,12 @@ def plotSpeedGraph(*keystrokes):
         if len(delays) > xmax:
             xmax = len(delays)
 
+    title = f"Typing speed: {quote}"
+    max_title_length = 80
+    plt.title(title if len(title) <= max_title_length else title[:max_title_length] + "...")
+    plt.xlabel("Characters")
+    plt.ylabel("Typing Speed (in WPM)")
+    plt.yticks()
     plt.ylim(ymin, ymax)
     plt.xlim(0, xmax)
     plt.legend()

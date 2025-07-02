@@ -8,28 +8,6 @@ from Stats import getQuotesIntersection, histWPMDistribution, histAccDistributio
 
 mpl.use("Qt5Agg")
 
-# with open("data", "rb") as f:
-#     sky = pickle.load(f)
-
-# sky = getUserProfileData("cammya")
-
-# histWPMDistribution(sky)
-# histAccDistribution(sky)
-
-# with open("data", "wb") as f:
-#     pickle.dump(sky, f)
-
-
-# sky = getUserProfileData("skypromp")
-# cammy = getUserProfileData("cammya")
-
-# flaneurQuotes(sky, cammy)
-# histPpDistribution(sky)
-
-# sky_ids = set(map(lambda col: col.quote_id, sky))
-# cammy_ids = set(map(lambda col: col.quote_id, cammy))
-
-
 while True:
     statstype = input("""What statistics would you like to see?
     press 1 for: WPM distribution
@@ -58,7 +36,7 @@ while True:
 
             flaneurQuotes(user1, user2)
         case "5":
-            quote_id = "bsiaero_9695"
+            quote_id = input("What quote id would you like to check? ")
 
             keystrokes_list = getQuoteKeystrokes(quote_id)
             plotSpeedGraph(*keystrokes_list)

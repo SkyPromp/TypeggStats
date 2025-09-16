@@ -1,11 +1,9 @@
 #! /bin/python3
 
 from DataApi import getQuotes, getRaces, getTop250RacesByPP
-from StatsApi import findSatisfyingScores, getRacePpPb, histAccDistributionApi, histRecoveryTimeDistributionApi, histWPMDistributionApi, plotDifficultyByLength, plotPpByDifficulty, plotPpByLength, plotPpPerWpm, plotRacetime, plotTop250Pp, plotTotalPp, plotWpmByDifficulty, plotWpmByLength, quoteLikesPerUser, quotesPerUser
+from StatsApi import findSatisfyingScores, histRecoveryTimeDistributionApi, histWPMDistributionApi, plotDifficultyByLength, plotPpByDifficulty, plotPpByLength, plotPpPerWpm, plotRacetime, plotTop250Pp, plotTotalPp, plotWpmByDifficulty, plotWpmByLength, quoteLikesPerUser, quotesPerUser
 import matplotlib as mpl
 import pickle
-from DataSources import getQuote, getQuoteKeystrokes, getQuoteUserKeystrokes, getUserProfileData
-from Stats import getQuotesIntersection, histWPMDistribution, histAccDistribution, histPpDistribution, flaneurQuotes, plotSpeedGraph
 import numpy as np
 
 import matplotlib.pyplot as plt
@@ -15,69 +13,38 @@ mpl.use("Qt5Agg")
 ranked_quotes, unranked_quotes = getQuotes()
 
 while True:
-    statstype = input("""What statistics would you like to see?
-    press 1 for: WPM distribution
-    press 2 for: PP distribution
-    press 3 for: Acc distribution
-    press 4 for: What quotes you need to flaneur someone
-    press 5 for: Quote leaderboard speed graph
-    press 6 for: Quote comparison between specific users
-    press 7 for: solo WPM distribution
-    press 8 for: multi WPM distribution
-    press 9 for: All WPM distribution
-    press 10 for: All error recovery time distribution
-    press 11 for: Total quote submissions per user
-    press 12 for: Total quote likes per user
-    press 13 for: Find all satisfying races
-    press 14 for: Compare top 250 Non unique pp races
-    press 15 for: Total racetime graph
-    press 16 for: Total pp graph
-    press 17 for: Get race quoteId's from old to new
-    press 18 for: Get typing speed per quote length
-    press 19 for: Get pp per quote length
-    press 20 for: Get quote difficulty by quote length
-    press 21 for: Get typing speed per quote difficulty
-    press 22 for: Get pp per quote difficulty
-    press 23 for: Get pp per typing speed
-    press 24 for: Get acc distribution
-    press 25 for: Compare top 250 unique pp races
+    command, *settings = input("""What statistics would you like to see?
+    atg: for all time overviews (time, pp) . many
+    dis: for all distributions (wpm, recovery, reaction) (solo, multi, both) . one
+    quo: for quote statistics (submission, likes) . none
+    sat: for satisfying races
+    cov: for a pp coverage graph
+    old: get races from old to new . one
+    dbl: get difficulty by quote length
+    rbs: get races by stats (wpm, pp) (length, difficulty) - many
+    dia: get pp by typing speed
     """)
 
+    # command [options] user1 user2 user3
+
+    match command:
+        case "atg":
+            if "." in settings:
+                i = settings.index(".")
+
+                for name_i in range(i + 1, len(settings))
+
+        case "dis":
+        case "quo":
+        case "sat":
+        case "cov":
+        case "old":
+        case "dbl":
+        case "rbs":
+        case "dia":
+
+
     match statstype:
-        case "1":
-            user = getUserProfileData(input("For what username would you like to get the graph? "))
-
-            histWPMDistribution(user)
-        case "2":
-            user = getUserProfileData(input("For what username would you like to get the graph? "))
-
-            histPpDistribution(user)
-        case "3":
-            user = getUserProfileData(input("For what username would you like to get the graph? "))
-
-            histAccDistribution(user)
-        case "4":
-            user1 = getUserProfileData(input("What username are you? "))
-            user2 = getUserProfileData(input("What username would you like to beat? "))
-
-            flaneurQuotes(user1, user2)
-        case "5":
-            quote_id = input("What quote id would you like to check? ")
-
-            keystrokes_list = getQuoteKeystrokes(quote_id)
-            plotSpeedGraph(*keystrokes_list)
-        case "6":
-            # quote_id = input("What quote id would you like to check? ")
-            #
-            # users = []
-            # user = input("What username would you like to add to the list? type q to stop adding new ones ")
-            #
-            # while user != "q":
-            #     users.append(user)
-            #     user = input("What username would you like to add to the list? type q to stop adding new ones ")
-            #
-            getQuoteUserKeystrokes("thorsbc_2466", "flaneur")
-            # keystrokes_list = [getQuoteUserKeystrokes(quote_id, username) for username in users]
         case "7":
             solo, multi = getRaces(input("For what username would you like to get the graph? "))
 
@@ -203,10 +170,8 @@ while True:
         case "18":
             username = input("For what username would you like to get the stats? ")
             solo, multi = getRaces(username)
-            races = np.concatenate([solo, multi])
-            races = getRacePpPb(races)
 
-            plotWpmByLength(races, ranked_quotes, label=username)
+            plotWpmByLength(np.concatenate([solo, multi]), ranked_quotes, label=username)
 
             plt.legend()
             plt.show()
@@ -214,9 +179,8 @@ while True:
         case "19":
             username = input("For what username would you like to get the stats? ")
             solo, multi = getRaces(username)
-            races = np.concatenate([solo, multi])
 
-            plotPpByLength(races, ranked_quotes, label=username)
+            plotPpByLength(np.concatenate([solo, multi]), ranked_quotes, label=username)
 
             plt.legend()
             plt.show()
@@ -229,9 +193,8 @@ while True:
         case "21":
             username = input("For what username would you like to get the stats? ")
             solo, multi = getRaces(username)
-            races = np.concatenate([solo, multi])
 
-            plotWpmByDifficulty(races, ranked_quotes, label=username)
+            plotWpmByDifficulty(np.concatenate([solo, multi]), ranked_quotes, label=username)
 
             plt.legend()
             plt.show()
@@ -239,62 +202,22 @@ while True:
         case "22":
             username = input("For what username would you like to get the stats? ")
             solo, multi = getRaces(username)
-            races = np.concatenate([solo, multi])
 
-            plotPpByDifficulty(races, ranked_quotes, label=username)
+            plotPpByDifficulty(np.concatenate([solo, multi]), ranked_quotes, label=username)
 
             plt.legend()
             plt.show()
         case "23":
             username = input("For what username would you like to get the stats? ")
             solo, multi = getRaces(username)
-            races = np.concatenate([solo, multi])
-            races = getRacePpPb(races)
 
-            plotPpPerWpm(races, label=username)
+            plotPpPerWpm(np.concatenate([solo, multi]), label=username)
 
             plt.legend()
             plt.show()
-        case "24":
-            username = input("For what username would you like to get the stats? ")
-            solo, multi = getRaces(username)
-            races = np.concatenate([solo, multi])
-
-            histAccDistributionApi(races, label=username)
-
-            plt.legend()
-            plt.show()
-
-        case "25":
-            username = input("For what username would you like to get the graph? ")
-
-            while username != "q":
-                solo, multi = getRaces(username)
-                if solo is None:
-                    solo = []
-                if multi is None:
-                    multi = []
-
-                races = np.concatenate([solo, multi])
-                races = list(sorted(races, key=lambda race: race["pp"], reverse=True))
-
-                print(len(set(map(lambda race: race["quoteId"], races))))
-
-                if races is not None:
-                    print(type(races))
-                    races = getRacePpPb(races)
-                    print(type(races))
-
-                    races = races[:250]
-                    plotTop250Pp(races, label=username)
-
-                username = input("For what username would you like to get the graph or q to show data: ")
-
-            plt.legend()
-            plt.show()
-
         case "q":
             break
         case _:
             print("This command has not been found, if you would like to quit, press q ")
+
 

@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 import requests
 from DataTypes import Column
+import urllib.parse
 
 
 def getUserProfileData(username: str) -> list:
@@ -34,7 +35,15 @@ def getQuote(quote_id: str):
 
 
 def getQuoteKeystrokes(quote_id: str):
+    quote_id = quote_id.replace(":", "%3A")
+    quote_id = quote_id.replace("<", "%3C")
+    quote_id = quote_id.replace("\\", "%5C")
+    quote_id = quote_id.replace(">", "%3E")
+    quote_id = quote_id.replace("\"", "%5C%22")
+    quote_id = quote_id.replace("|", "%7C")
+
     link = f"https://api.typegg.io/api/collections/top_replays/records?page=1&perPage=10&filter=quote.id%20%3D%20%22{quote_id}%22&expand=user&sort=-wpm"
+    print("url: ", link)
 
     data = requests.get(link).json()
 
@@ -48,4 +57,28 @@ def getQuoteKeystrokes(quote_id: str):
         keystroke_list.append((username, keystrokes))
 
     return keystroke_list
-    
+
+
+def getQuoteUserKeystrokes(quote_id: str, username: str):
+    link = f"https://typegg.io/solo/thorsbc_2466/vs/{username}/__data.json"
+
+    data = requests.get(link).json()
+    print(data)
+    data = data["nodes"]
+    data = data[2]["data"]
+    # for i, val in enumerate(data):
+    #     print(i, val)
+    #     print("--------------------")
+    # print(data)
+    # print(data.keys())
+
+
+
+    # data = data["items"]
+    #
+    # keystroke_list = []
+    #
+    # keystrokes = userdata["keystroke_data"]["keystrokes"]
+    # keystroke_list.append((username, keystrokes))
+    #
+    # return keystroke_list

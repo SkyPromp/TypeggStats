@@ -331,7 +331,7 @@ def plotPpPerWpm(races, label=None):
     wpm = list(map(lambda el: el["wpm"], races))
     pp = list(map(lambda el: el["pp"], races))
 
-    plt.scatter(wpm, pp, label=label)
+    plt.scatter(wpm, pp, label=label, s=8)
 
     plt.title("PP per typing speed")
     plt.xlabel("Typing speed (in WPM)")

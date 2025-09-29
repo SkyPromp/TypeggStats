@@ -7,7 +7,7 @@ import pickle
 from DataSources import getQuote, getQuoteKeystrokes, getQuoteUserKeystrokes, getUserProfileData
 from Stats import getQuotesIntersection, histWPMDistribution, histAccDistribution, histPpDistribution, flaneurQuotes, plotSpeedGraph
 import numpy as np
-
+import requests as r
 import matplotlib.pyplot as plt
 
 mpl.use("Qt5Agg")
@@ -41,6 +41,7 @@ while True:
     press 23 for: Get pp per typing speed
     press 24 for: Get acc distribution
     press 25 for: Compare top 250 unique pp races
+    press 26 for: Checking the gauntlet
     """)
 
     match statstype:
@@ -247,11 +248,13 @@ while True:
             plt.show()
         case "23":
             username = input("For what username would you like to get the stats? ")
-            solo, multi = getRaces(username)
-            races = np.concatenate([solo, multi])
-            races = getRacePpPb(races)
 
-            plotPpPerWpm(races, label=username)
+            while username != "q":
+                solo, multi = getRaces(username)
+                races = np.concatenate([solo, multi])
+                races = getRacePpPb(races)
+                plotPpPerWpm(races, label=username)
+                username = input("For what username would you like to get the stats? ")
 
             plt.legend()
             plt.show()
@@ -292,6 +295,43 @@ while True:
 
             plt.legend()
             plt.show()
+
+        case "26":
+            username = input("For what username would you like to get the graph? ")
+            solo, multi = getRaces(username)
+            races = np.concatenate([solo, multi])
+            races = {race["quoteId"]: race for race in races}
+            quotes = np.concatenate([ranked_quotes, unranked_quotes])
+
+            i = 1
+            total = 0
+
+            with open("Gauntlet.txt", "r") as f:
+                for uri in f:
+                    uri = uri.strip()
+                    total += 1
+                    quoteId = uri.split("/")[-1]
+
+                    if quoteId in races.keys():
+                        i += 1
+                    else:
+                        quote = None
+
+                        for quote_el in quotes:
+                            if quote_el["quoteId"] == quoteId:
+                                quote = quote_el
+
+                        if quote != None:
+                            print(f'len:{len(quote["text"])}, diff:{quote["difficulty"]}, quote: {uri}')
+                        else:
+                            print(f"quote not found: {uri}")
+
+            print(f"{i}/{total}={100*i/total:.2f}% done")
+
+                    # status = r.get(f"http://api.typegg.io/v1/users/{username}/quotes/{quoteId}").status_code
+
+                    # if status != 200:
+                    #     print(uri)
 
         case "q":
             break

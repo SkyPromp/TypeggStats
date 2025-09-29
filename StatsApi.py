@@ -338,17 +338,28 @@ def plotPpPerWpm(races, label=None):
     plt.ylabel("PP")
 
 
+import mplcursors
 def plotDifficultyByLength(quotes_data):
-    quotes = [(len(quote["text"]), quote["difficulty"]) for quote in quotes_data]
+    quotes = [(quote["text"], quote["difficulty"]) for quote in quotes_data]
 
-    length = [el[0] for el in quotes]
+    texts = [el[0] for el in quotes]
+    length = [len(el[0]) for el in quotes]
     difficulty = [el[1] for el in quotes]
 
-    plt.scatter(length, difficulty, s=4)
+    fig,ax = plt.subplots()
+    sc = plt.scatter(length, difficulty, s=4)
 
     plt.title("Quote difficulty by quote length")
     plt.xlabel("Quote length")
     plt.ylabel("Difficulty")
+
+
+    # Add hover tooltips
+    cursor = mplcursors.cursor(sc, hover=True)
+    @cursor.connect("add")
+    def on_add(sel):
+        idx = sel.index
+        sel.annotation.set(text=texts[idx], fontsize=8)
 
 
 # def averageQuoteDifficultyProgression(races, quotes_data):

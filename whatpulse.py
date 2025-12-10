@@ -120,6 +120,12 @@ def textToKeypresses(text: str, amount=1) -> Dict[str, int]:
     return frequencies
 
 
-keypresses = textToKeypresses("You may not yet be at a point where you have fully recovered your power or all of your memories... But courage need not be remembered... For it is never forgotten. That energy covering Ganon's body is called Malice. None of your attacks will get through as he now is... I will hold the Malice back as much as I can, but my power is waning. Attack any glowing points that you see! May you be victorious!")
+def textToKeypresses2(text: str, amount=1) -> Dict[str, int]:
+    from collections import Counter
+
+    return {key: value * amount for key, value in dict(Counter(text)).items()}
+
+
+keypresses = textToKeypresses2("You may not yet be at a point where you have fully recovered your power or all of your memories... But courage need not be remembered... For it is never forgotten. That energy covering Ganon's body is called Malice. None of your attacks will get through as he now is... I will hold the Malice back as much as I can, but my power is waning. Attack any glowing points that you see! May you be victorious!")
 
 drawHeatmap(keypresses=keypresses, keymap=getKeymap("dvorak"))

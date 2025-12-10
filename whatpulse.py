@@ -3,6 +3,7 @@ import matplotlib.patches as patches
 from matplotlib import cm
 from typing import Dict, List
 import matplotlib.colors as mcolors
+from collections import Counter
 
 
 class K:
@@ -121,7 +122,8 @@ def textToKeypresses(text: str, amount=1) -> Dict[str, int]:
 
 
 def textToKeypresses2(text: str, amount=1) -> Dict[str, int]:
-    from collections import Counter
+    if amount == 1:
+        return dict(Counter(text))
 
     return {key: value * amount for key, value in dict(Counter(text)).items()}
 

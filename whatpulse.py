@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from matplotlib import cm
 from typing import Dict, List
+import matplotlib.colors as mcolors
 
 
 class K:
@@ -24,7 +25,7 @@ def getKeymap(keymap: str) -> List[List[K]]:
               [K("", width=1.5, text="Tab"), K("qQ"), K("wW"), K("eE"), K("rR"), K("tT"), K("yY"), K("uU"), K("iI"), K("oO"), K("pP"), K("[{"), K("]}"), K("\\|", width=1.5)],
               [K("", width=1.75, text="Caps Lock", fontsize=10), K("aA"), K("sS"), K("dD"), K("fF"), K("gG"), K("hH"), K("jJ"), K("kK"), K("lL"), K(";:"), K("'\""), K("\n", width=2.25 ,text="Enter")],
               [K("", width=2, text="Shift"), K("zZ"), K("xX"), K("cC"), K("vV"), K("bB"), K("nN"), K("mM"), K(",<"), K(".>"), K("/?"), K("", width=3, text="Shift")],
-              [K("", width=1.25, text="Ctrl"), K("", width=1.25, text="Super"), K("", width=1.25, text="Alt"), K(" ", width=6.25, text="Space"), K("", width=1.25, text="Alt"), K("", width=1.25, text="Super"), K("", width=1.25, text="?"), K("", width=1.25, text="Ctrl")]]
+              [K("", width=1.25, text="Ctrl"), K("", width=1.25, text="Super"), K("", width=1.25, text="Alt"), K(" ", width=6.25, text="Space"), K("", width=1.25, text="Alt"), K("", width=1.25, text="Super"), K("", width=1.25, text="Menu"), K("", width=1.25, text="Ctrl")]]
      }
 
     if keymap in keymaps:
@@ -33,21 +34,13 @@ def getKeymap(keymap: str) -> List[List[K]]:
     return keymaps["qwerty"]
 
 
-def getMaxPresses(keypresses: Dict[str, int], keymap: List[List[K]]) -> int:
-    max_presses = 0
-
-    max_presses = 10  # TODO remove
-
-    if max_presses == 0:
-        max_presses = 1
-
-    return max_presses
-
-
 def drawHeatmap(keypresses: Dict[str, int], keymap: List[List[K]]):
     cmap = cm.get_cmap("managua")
 
-    max_presses = getMaxPresses(keypresses=keypresses, keymap=keymap)
+    max_presses = 0
+    rectangles = []
+    shift_presses = 0
+    alt_presses = 0
 
     for row_i, row in enumerate(keymap):
         total_width = 0
@@ -55,36 +48,71 @@ def drawHeatmap(keypresses: Dict[str, int], keymap: List[List[K]]):
         for key in row:
             total_presses = 0
 
-            for character in key.matches:
-                if character in keypresses:
-                    total_presses += keypresses[character]
+            for i, character in enumerate(key.matches):
+                if character not in keypresses:
+                    continue
 
-            total_presses = total_presses / max_presses
+                presses = keypresses[character]
+                total_presses += presses
 
-            square = patches.Rectangle((total_width, -row_i), key.width, 1, edgecolor="black", facecolor=cmap(total_presses))
-            ax.add_patch(square)
+                if i == 1:
+                    shift_presses += presses
+
+                if i == 2:
+                    alt_presses += presses
+
+            if total_presses > max_presses:
+                max_presses = total_presses
+
+            square = patches.Rectangle((total_width, -row_i), key.width, 1, edgecolor="black")
             ax.text(total_width + key.width / 2, 0.5 - row_i, key.text, ha="center", va="center", fontsize=key.fontsize)
+
+            if key.text == "Shift":
+                total_presses = -1
+
+            if key.text == "Alt":
+                total_presses = -2
+
+            rectangles.append((square, total_presses))
             total_width += key.width
 
-    plt.xlim(-0.5, 16)
-    plt.ylim(-5, 2)
+    for rectangle, presses in rectangles:
+        if presses == -1:
+            presses = shift_presses
+        elif presses == -2:
+            presses = alt_presses
+
+        rectangle.set_facecolor(cmap(presses/max_presses))
+        ax.add_patch(rectangle)
+
+    plt.xlim(-0.1, 15.1)
+    plt.ylim(-4.1, 1.1)
+    plt.axis('off')
     plt.gca().set_aspect("equal", adjustable="box")
+
+    # Cmap legend
+    sm = cm.ScalarMappable(cmap=cmap, norm=mcolors.Normalize(vmin=0, vmax=max_presses))
+    sm.set_array([])
+    cbar_ax = fig.add_axes([0.92, 0.37, 0.02, 0.24])
+    cbar = plt.colorbar(sm, cax=cbar_ax)
+    cbar.set_label('Key Presses')
+
     plt.show()
 
 
-def textToKeypresses(text: str) -> Dict[str, int]:
+def textToKeypresses(text: str, amount=1) -> Dict[str, int]:
     frequencies = {}
 
     for char in text:
         if char in frequencies:
-            frequencies[char] += 1
+            frequencies[char] += amount
 
         else:
-            frequencies[char] = 1
+            frequencies[char] = amount
 
     return frequencies
 
 
-keypresses = textToKeypresses("Hello, how is it going with you Eiko?")
+keypresses = textToKeypresses("You may not yet be at a point where you have fully recovered your power or all of your memories... But courage need not be remembered... For it is never forgotten. That energy covering Ganon's body is called Malice. None of your attacks will get through as he now is... I will hold the Malice back as much as I can, but my power is waning. Attack any glowing points that you see! May you be victorious!")
 
 drawHeatmap(keypresses=keypresses, keymap=getKeymap("qwerty"))

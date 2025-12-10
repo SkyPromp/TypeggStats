@@ -21,10 +21,17 @@ fig, ax = plt.subplots()
 
 
 def getKeymap(keymap: str) -> List[List[K]]:
-    keymaps = {"qwerty": [[K("~`"), K("1!"), K("2@"), K("3#"), K("4$"), K("5%"), K("6^"), K("7&"), K("8*"), K("9("), K("0)"), K("-_"), K("=+"), K("", text="Backspace", width=2, fontsize=10)],
+    keymaps = {
+        "qwerty": [[K("~`"), K("1!"), K("2@"), K("3#"), K("4$"), K("5%"), K("6^"), K("7&"), K("8*"), K("9("), K("0)"), K("-_"), K("=+"), K("", text="Backspace", width=2, fontsize=10)],
               [K("", width=1.5, text="Tab"), K("qQ"), K("wW"), K("eE"), K("rR"), K("tT"), K("yY"), K("uU"), K("iI"), K("oO"), K("pP"), K("[{"), K("]}"), K("\\|", width=1.5)],
               [K("", width=1.75, text="Caps Lock", fontsize=10), K("aA"), K("sS"), K("dD"), K("fF"), K("gG"), K("hH"), K("jJ"), K("kK"), K("lL"), K(";:"), K("'\""), K("\n", width=2.25 ,text="Enter")],
               [K("", width=2, text="Shift"), K("zZ"), K("xX"), K("cC"), K("vV"), K("bB"), K("nN"), K("mM"), K(",<"), K(".>"), K("/?"), K("", width=3, text="Shift")],
+              [K("", width=1.25, text="Ctrl"), K("", width=1.25, text="Super"), K("", width=1.25, text="Alt"), K(" ", width=6.25, text="Space"), K("", width=1.25, text="Alt"), K("", width=1.25, text="Super"), K("", width=1.25, text="Menu"), K("", width=1.25, text="Ctrl")]],
+
+        "dvorak": [[K("~`"), K("1!"), K("2@"), K("3#"), K("4$"), K("5%"), K("6^"), K("7&"), K("8*"), K("9("), K("0)"), K("[{"), K("]}"), K("", text="Backspace", width=2, fontsize=10)],
+              [K("", width=1.5, text="Tab"), K("'\""), K(",<"), K(".>"), K("pP"), K("yY"), K("fF"), K("gG"), K("cC"), K("rR"), K("lL"), K("?/"), K("=+"), K("\\|", width=1.5)],
+              [K("", width=1.75, text="Caps Lock", fontsize=10), K("aA"), K("oO"), K("eE"), K("uU"), K("iI"), K("dD"), K("hH"), K("tT"), K("nN"), K("sS"), K("-_"), K("\n", width=2.25 ,text="Enter")],
+              [K("", width=2, text="Shift"), K(";:"), K("qQ"), K("jJ"), K("kK"), K("xX"), K("bB"), K("mM"), K("wW"), K("vV"), K("zZ"), K("", width=3, text="Shift")],
               [K("", width=1.25, text="Ctrl"), K("", width=1.25, text="Super"), K("", width=1.25, text="Alt"), K(" ", width=6.25, text="Space"), K("", width=1.25, text="Alt"), K("", width=1.25, text="Super"), K("", width=1.25, text="Menu"), K("", width=1.25, text="Ctrl")]]
      }
 
@@ -115,4 +122,4 @@ def textToKeypresses(text: str, amount=1) -> Dict[str, int]:
 
 keypresses = textToKeypresses("You may not yet be at a point where you have fully recovered your power or all of your memories... But courage need not be remembered... For it is never forgotten. That energy covering Ganon's body is called Malice. None of your attacks will get through as he now is... I will hold the Malice back as much as I can, but my power is waning. Attack any glowing points that you see! May you be victorious!")
 
-drawHeatmap(keypresses=keypresses, keymap=getKeymap("qwerty"))
+drawHeatmap(keypresses=keypresses, keymap=getKeymap("dvorak"))

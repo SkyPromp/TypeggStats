@@ -93,7 +93,7 @@ def drawHeatmap(keypresses: Dict[str, int], keymap: List[List[K]]):
     # Cmap legend
     sm = cm.ScalarMappable(cmap=cmap, norm=mcolors.Normalize(vmin=0, vmax=max_presses))
     sm.set_array([])
-    cbar_ax = fig.add_axes([0.92, 0.37, 0.02, 0.24])
+    cbar_ax = fig.add_axes([0.91, 0.3715, 0.02, 0.245])
     cbar = plt.colorbar(sm, cax=cbar_ax)
     cbar.set_label('Key Presses')
 

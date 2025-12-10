@@ -80,3 +80,11 @@ def getQuotes():
     #     # print(dict(data))
     #
     # raise Exception
+
+def getLeaderboard(quoteId: str):
+    url_base = f"https://api.typegg.io/v1/quotes/{quoteId}"
+
+    url = url_base
+    data = requests.get(url).json()
+
+    return data["leaderboard"]

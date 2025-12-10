@@ -1,6 +1,6 @@
 #! /bin/python3
 
-from DataApi import getQuotes, getRaces, getTop250RacesByPP
+from DataApi import getLeaderboard, getQuotes, getRaces, getTop250RacesByPP
 from StatsApi import findSatisfyingScores, getRacePpPb, histAccDistributionApi, histRecoveryTimeDistributionApi, histWPMDistributionApi, plotDifficultyByLength, plotPpByDifficulty, plotPpByLength, plotPpPerWpm, plotRacetime, plotTop250Pp, plotTotalPp, plotWpmByDifficulty, plotWpmByLength, quoteLikesPerUser, quotesPerUser
 import matplotlib as mpl
 import pickle
@@ -65,7 +65,9 @@ while True:
         case "5":
             quote_id = input("What quote id would you like to check? ")
 
-            keystrokes_list = getQuoteKeystrokes(quote_id)
+            # keystrokes_list = getQuoteKeystrokes(quote_id)
+            keystrokes_list = list(map(lambda race: race["keystrokes"], getLeaderboard(quote_id)))
+            
             plotSpeedGraph(*keystrokes_list)
         case "6":
             # quote_id = input("What quote id would you like to check? ")

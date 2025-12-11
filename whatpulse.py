@@ -13,7 +13,10 @@ class K:
         self.fontsize = fontsize
 
         if text is None:
-            self.text = matches
+            if len(matches) >= 2 and matches.isalpha() and matches[0].upper() == matches[1]:
+                self.text = matches[1]
+            else:
+                self.text = matches
         else:
             self.text = text
 

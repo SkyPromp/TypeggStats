@@ -4,6 +4,7 @@ from matplotlib import cm
 from typing import Dict, List
 import matplotlib.colors as mcolors
 from collections import Counter
+from matplotlib.colors import LinearSegmentedColormap
 
 
 class K:
@@ -44,9 +45,16 @@ def getKeymap(keymap: str) -> List[List[K]]:
 
     return keymaps["qwerty"]
 
-
 def drawHeatmap(keypresses: Dict[str, int], keymap: List[List[K]]):
-    cmap = cm.get_cmap("managua")
+    colors = [
+        (0, "white"),
+        (0.1, "yellow"),
+        (0.3, "orange"),
+        (0.7, "red"),
+        (1, "darkred"),
+    ]
+
+    cmap = LinearSegmentedColormap.from_list("blue_yellow_orange_red", colors)
 
     max_presses = 0
     rectangles = []

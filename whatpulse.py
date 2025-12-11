@@ -47,7 +47,7 @@ def getKeymap(keymap: str) -> List[List[K]]:
 
 def drawHeatmap(keypresses: Dict[str, int], keymap: List[List[K]]):
     colors = [
-        (0, "white"),
+        (0, "lightgray"),
         (0.1, "yellow"),
         (0.3, "orange"),
         (0.7, "red"),

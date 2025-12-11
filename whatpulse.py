@@ -23,8 +23,6 @@ class K:
                 self.text = self.matches
 
 
-
-
 def getKeymap(keymap: str) -> List[List[K]]:
     keymaps = {
         "qwerty": [[K("~`"), K("1!"), K("2@"), K("3#"), K("4$"), K("5%"), K("6^"), K("7&"), K("8*"), K("9("), K("0)"), K("-_"), K("=+"), K("", text="Backspace", width=2, fontsize=10)],
@@ -44,6 +42,7 @@ def getKeymap(keymap: str) -> List[List[K]]:
         return keymaps[keymap]
 
     return keymaps["qwerty"]
+
 
 def drawHeatmap(keypresses: Dict[str, int], keymap: List[List[K]]):
     colors = [
@@ -120,13 +119,23 @@ def drawHeatmap(keypresses: Dict[str, int], keymap: List[List[K]]):
     plt.show()
 
 
-def textToKeypresses(text: str, amount=1) -> Dict[str, int]:
-    if amount == 1:
-        return dict(Counter(text))
+class ScaledCounter(Counter):
+    def __mul__(self, factor):
+        if not isinstance(factor, (int, float)):
+            return NotImplemented
 
-    return {key: value * amount for key, value in dict(Counter(text)).items()}
+        if factor == 1:
+            return self
+
+        return ScaledCounter({key: value * factor for key, value in self.items()})
+    
+    __rmul__ = __mul__
 
 
-keypresses = textToKeypresses("You may not yet be at a point where you have fully recovered your power or all of your memories... But courage need not be remembered... For it is never forgotten. That energy covering Ganon's body is called Malice. None of your attacks will get through as he now is... I will hold the Malice back as much as I can, but my power is waning. Attack any glowing points that you see! May you be victorious!")
+total = ScaledCounter()
 
-drawHeatmap(keypresses=keypresses, keymap=getKeymap("dvorak"))
+for i in range(10):
+    total += ScaledCounter("You may not yet be at a point where you have fully recovered your power or all of your memories... But courage need not be remembered... For it is never forgotten. That energy covering Ganon's body is called Malice. None of your attacks will get through as he now is... I will hold the Malice back as much as I can, but my power is waning. Attack any glowing points that you see! May you be victorious!") * i
+
+print(dict(total))
+drawHeatmap(keypresses=dict(total), keymap=getKeymap("dvorak"))

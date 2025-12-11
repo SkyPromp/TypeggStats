@@ -5,24 +5,24 @@ from typing import Dict, List
 import matplotlib.colors as mcolors
 from collections import Counter
 from matplotlib.colors import LinearSegmentedColormap
+from dataclasses import dataclass
 
 
+@dataclass
 class K:
-    def __init__(self, matches, width=1, text=None, fontsize=12):
-        self.width = width
-        self.matches = matches
-        self.fontsize = fontsize
+    matches: str
+    width: float = 1
+    text: str | None = None
+    fontsize: int = 12
 
-        if text is None:
-            if len(matches) >= 2 and matches.isalpha() and matches[0].upper() == matches[1]:
-                self.text = matches[1]
+    def __post_init__(self):
+        if self.text is None:
+            if len(self.matches) >= 2 and self.matches.isalpha() and self.matches[0].upper() == self.matches[1]:
+                self.text = self.matches[1]
             else:
-                self.text = matches
-        else:
-            self.text = text
+                self.text = self.matches
 
 
-fig, ax = plt.subplots()
 
 
 def getKeymap(keymap: str) -> List[List[K]]:
@@ -55,6 +55,7 @@ def drawHeatmap(keypresses: Dict[str, int], keymap: List[List[K]]):
     ]
 
     cmap = LinearSegmentedColormap.from_list("blue_yellow_orange_red", colors)
+    fig, ax = plt.subplots()
 
     max_presses = 0
     rectangles = []

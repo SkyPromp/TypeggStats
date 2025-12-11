@@ -112,12 +112,34 @@ def drawHeatmap(keypresses: Dict[str, int], keymap: List[List[K]]):
 
 
 def textToKeypresses(text: str, amount=1) -> Dict[str, int]:
+    frequencies = {}
+
+    for char in text:
+        if char in frequencies:
+            frequencies[char] += amount
+
+        else:
+            frequencies[char] = amount
+
+    return frequencies
+
+
+def textToKeypresses2(text: str, amount=1) -> Dict[str, int]:
     if amount == 1:
         return dict(Counter(text))
 
     return {key: value * amount for key, value in dict(Counter(text)).items()}
 
+from time import time_ns
 
-keypresses = textToKeypresses("You may not yet be at a point where you have fully recovered your power or all of your memories... But courage need not be remembered... For it is never forgotten. That energy covering Ganon's body is called Malice. None of your attacks will get through as he now is... I will hold the Malice back as much as I can, but my power is waning. Attack any glowing points that you see! May you be victorious!")
+s = time_ns()
+for i in range(10000):
+    keypresses = textToKeypresses2("You may not yet be at a point where you have fully recovered your power or all of your memories... But courage need not be remembered... For it is never forgotten. That energy covering Ganon's body is called Malice. None of your attacks will get through as he now is... I will hold the Malice back as much as I can, but my power is waning. Attack any glowing points that you see! May you be victorious!")
+print("fast", (time_ns() - s) / 1e9)
+
+s = time_ns()
+for i in range(10000):
+    keypresses = textToKeypresses("You may not yet be at a point where you have fully recovered your power or all of your memories... But courage need not be remembered... For it is never forgotten. That energy covering Ganon's body is called Malice. None of your attacks will get through as he now is... I will hold the Malice back as much as I can, but my power is waning. Attack any glowing points that you see! May you be victorious!")
+print("slow", (time_ns() - s) / 1e9)
 
 drawHeatmap(keypresses=keypresses, keymap=getKeymap("dvorak"))
